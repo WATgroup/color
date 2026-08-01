@@ -16,13 +16,11 @@ import (
 
 const escape = "\x1b"
 const escRune = 0x1b
-
+const lineFeed = "\x0a" // XXX: windows is \0xa0xd
 
 func init() {
-	Init()	// avoid crashes if/when user forgets to initialize the library
+	Init() // avoid crashes if/when user forgets to initialize the library
 }
-
-
 
 // checkNoColor returns true if $NO_COLOR is set to a non-empty string.
 func checkNoColor() bool {
@@ -53,7 +51,7 @@ func SetDefaults() {
 }
 
 func fputbs(w io.Writer, x []byte) {
- 	w.Write(x)
+	w.Write(x)
 }
 func fputs(w io.Writer, s string) {
 	w.Write([]byte(s))
@@ -64,7 +62,7 @@ func fputs(w io.Writer, s string) {
 // sequence returns a formatted SGR sequence to be plugged into a "\x1b[...m"
 // an example output might be: "1;36" -> bold cyan
 
-//go:noinline
+//go:inline
 func (c *Color) sequence(sb *strings.Builder) {
 	for i, v := range c.attr {
 		if i > 0 {
@@ -102,6 +100,27 @@ func (c *Color) wrap(s string) string {
 }
 
 //go:noinline
+func (c *Color) wrapsb(psb *strings.Builder, s string) {
+	if disableColor {
+		psb.WriteString(s)
+		return
+	}
+
+	// PREFIX:   ESC[X..m
+	escPrefix(psb)
+	c.sequence(psb)
+	escPostfix(psb)
+
+	// insert the string
+	psb.WriteString(s)
+
+	// POSTFIX:  ESC[X..m
+	escPrefix(psb)
+	c.unseq(psb)
+	escPostfix(psb)
+}
+
+//go:inline
 func (c *Color) unseq(sb *strings.Builder) {
 	// for each element in sequence:
 	// - use the specific reset escape if available,

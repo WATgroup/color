@@ -36,28 +36,30 @@ func colorPrint(format string, p ColorAttrib, a ...any) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-func (c Color) Print(a ...any) (n int, err error) {
-	// var sb1, sb2 strings.Builder
+// Print formats using the default formats for its operands and writes to
+// standard output.
+// Returns the number of bytes written and any write error encountered.
+// This is the standard fmt.Print() method wrapped with the given color
+func (c *Color) Print(args ...any) (n int, err error) {
+	var sb strings.Builder
 
-	// escPrefix(&sb1)
-	// c.sequence(&sb1)
-	// escPostfix(&sb1)
-	// fmt.Fprint(stdOut, sb1.String())
+	escPrefix(&sb)
+	c.sequence(&sb)
+	escPostfix(&sb)
 
-	// n, err = fmt.Fprint(stdOut, a...)
+	fmt.Fprint(&sb, args...)
 
-	// escPrefix(&sb2)
-	// c.unseq(&sb2)
-	// escPostfix(&sb2)
-	// fmt.Fprint(stdOut, sb1.String())
+	escPrefix(&sb)
+	c.unseq(&sb)
+	escPostfix(&sb)
 
-	return c.Fprint(stdOut, a...)
+	return c.Fprint(stdOut, sb.String())
 }
 
 // Fprint formats using the default formats for its operands and writes to w.
 // Spaces are added between operands when neither is a string.
 // It returns the number of bytes written and any write error encountered.
-func (c Color) Fprint(w io.Writer, a ...any) (n int, err error) {
+func (c *Color) Fprint(w io.Writer, args ...any) (n int, err error) {
 
 	var sb1, sb2 strings.Builder
 
@@ -70,7 +72,7 @@ func (c Color) Fprint(w io.Writer, a ...any) (n int, err error) {
 		n += n1
 	}
 
-	nn, err := fmt.Fprint(w, a...)
+	nn, err := fmt.Fprint(w, args...)
 	n += nn
 	if nil != err {
 		return
@@ -90,7 +92,7 @@ func (c Color) Fprint(w io.Writer, a ...any) (n int, err error) {
 
 // Fprintf formats according to a format specifier and writes to w.
 // It returns the number of bytes written and any write error encountered.
-func (c *Color) Fprintf(w io.Writer, format string, a ...any) (n int, err error) {
+func (c *Color) Fprintf(w io.Writer, format string, args ...any) (n int, err error) {
 	var sb1, sb2 strings.Builder
 
 	escPrefix(&sb1)
@@ -102,7 +104,7 @@ func (c *Color) Fprintf(w io.Writer, format string, a ...any) (n int, err error)
 		n += n1
 	}
 
-	nn, err := fmt.Fprintf(w, format, a...)
+	nn, err := fmt.Fprintf(w, format, args...)
 	n += nn
 	if nil != err {
 		return
@@ -120,7 +122,40 @@ func (c *Color) Fprintf(w io.Writer, format string, a ...any) (n int, err error)
 	return
 }
 
-func (c Color) Printf(format string, a ...any) (n int, err error) {
+// Printf formats according to a format specifier and writes to standard output.
+// It returns the number of bytes written and any write error encountered.
+// This is the standard fmt.Printf() method wrapped with the given color.
+func (c *Color) Printf(format string, args ...any) (n int, err error) {
+	return c.Fprintf(stdOut, format, args...)
+}
 
-	return c.Fprintf(stdOut, format, a...)
+// Println formats using the default formats for its operands and writes to
+// standard output. Spaces are always added between operands and a newline is
+// appended. It returns the number of bytes written and any write error
+// encountered. This is the standard fmt.Print() method wrapped with the given
+// color.
+func (c *Color) Println(args ...any) (n int, err error) {
+	var sb strings.Builder
+	c.wrapsb(&sb, fmt.Sprint(args...))
+	// return fmt.Println(sb.String())
+	sb.WriteString(lineFeed)
+	return fmt.Fprint(stdOut, sb.String())
+}
+
+// Sprint is just like Print, but returns a string instead of printing it.
+func (c *Color) Sprint(args ...any) string {
+	return c.wrap(fmt.Sprint(args...))
+}
+
+// Sprintln is just like Println, but returns a string instead of printing it.
+func (c *Color) Sprintln(args ...any) string {
+	var sb strings.Builder
+	c.wrapsb(&sb, fmt.Sprint(args))
+	sb.WriteString(lineFeed)
+	return sb.String()
+}
+
+// Sprintf is just like Printf, but returns a string instead of printing it.
+func (c *Color) Sprintf(format string, args ...any) string {
+	return c.wrap(fmt.Sprintf(format, args...))
 }

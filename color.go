@@ -6,7 +6,6 @@
 // for (colored) console Output
 package color
 
-
 //** Implementation based upon github.com/fatih/color, distributed under MIT license
 //   ...but otherwise completely reimplemented using modern patterns.
 //   The original was from 2013 and it shows :O
@@ -34,12 +33,14 @@ type Color struct {
 	attr []ColorAttrib
 }
 
-// Initialize the library -- optional
+// Init ialize the library -- optional
 func Init() {
 	disableColor = checkNoColor() || !stdoutIsTerminal()
 	SetDefaults()
 }
 
+// SetOutput re-sets the default output [writer] for the library
+// OBS: stdErr currently unused
 func SetOutput(w io.Writer) {
 	stdOut = w
 }
