@@ -4,6 +4,8 @@
 
 package color
 
+import "io"
+
 // Black is a convenient helper function to print with black foreground. A
 // newline is appended to format by default.
 func Black(format string, a ...any) { colorPrint(format, FgBlack, a...) }
@@ -35,6 +37,120 @@ func Cyan(format string, a ...any) { colorPrint(format, FgCyan, a...) }
 // White is a convenient helper function to print with white foreground. A
 // newline is appended to format by default.
 func White(format string, a ...any) { colorPrint(format, FgWhite, a...) }
+
+////////////////////////////////////////////////////////////
+
+// HiBlack is a convenient helper function to print with hi-intensity black foreground. A
+// newline is appended to format by default.
+func HiBlack(format string, a ...any) { colorPrint(format, FgHiBlack, a...) }
+
+// HiRed is a convenient helper function to print with hi-intensity red foreground. A
+// newline is appended to format by default.
+func HiRed(format string, a ...any) { colorPrint(format, FgHiRed, a...) }
+
+// HiGreen is a convenient helper function to print with hi-intensity green foreground. A
+// newline is appended to format by default.
+func HiGreen(format string, a ...any) { colorPrint(format, FgHiGreen, a...) }
+
+// HiYellow is a convenient helper function to print with hi-intensity yellow foreground.
+// A newline is appended to format by default.
+func HiYellow(format string, a ...any) { colorPrint(format, FgHiYellow, a...) }
+
+// HiBlue is a convenient helper function to print with hi-intensity blue foreground. A
+// newline is appended to format by default.
+func HiBlue(format string, a ...any) { colorPrint(format, FgHiBlue, a...) }
+
+// HiMagenta is a convenient helper function to print with hi-intensity magenta foreground.
+// A newline is appended to format by default.
+func HiMagenta(format string, a ...any) { colorPrint(format, FgHiMagenta, a...) }
+
+// HiCyan is a convenient helper function to print with hi-intensity cyan foreground. A
+// newline is appended to format by default.
+func HiCyan(format string, a ...any) { colorPrint(format, FgHiCyan, a...) }
+
+// HiWhite is a convenient helper function to print with hi-intensity white foreground. A
+// newline is appended to format by default.
+func HiWhite(format string, a ...any) { colorPrint(format, FgHiWhite, a...) }
+
+///////////////////////////////////////////////////////////////////////////////
+
+// FprintFunc returns a new function that prints the passed arguments as
+// colorized with color.Fprint().
+func (c *Color) FprintFunc() func(w io.Writer, a ...any) {
+	return func(w io.Writer, a ...any) {
+		c.Fprint(w, a...)
+	}
+}
+
+// PrintFunc returns a new function that prints the passed arguments as
+// colorized with color.Print().
+func (c *Color) PrintFunc() func(a ...any) {
+	return func(a ...any) {
+		c.Print(a...)
+	}
+}
+
+// FprintfFunc returns a new function that prints the passed arguments as
+// colorized with color.Fprintf().
+func (c *Color) FprintfFunc() func(w io.Writer, format string, a ...any) {
+	return func(w io.Writer, format string, a ...any) {
+		c.Fprintf(w, format, a...)
+	}
+}
+
+// PrintfFunc returns a new function that prints the passed arguments as
+// colorized with color.Printf().
+func (c *Color) PrintfFunc() func(format string, a ...any) {
+	return func(format string, a ...any) {
+		c.Printf(format, a...)
+	}
+}
+
+// FprintlnFunc returns a new function that prints the passed arguments as
+// colorized with color.Fprintln().
+func (c *Color) FprintlnFunc() func(w io.Writer, a ...any) {
+	return func(w io.Writer, a ...any) {
+		c.Fprintln(w, a...)
+	}
+}
+
+// PrintlnFunc returns a new function that prints the passed arguments as
+// colorized with color.Println().
+func (c *Color) PrintlnFunc() func(a ...any) {
+	return func(a ...any) {
+		c.Println(a...)
+	}
+}
+
+// SprintFunc returns a new function that returns colorized strings for the
+// given arguments with fmt.Sprint(). Useful to put into or mix into other
+// string. Windows users should use this in conjunction with color.Output, example:
+//
+//	put := New(FgYellow).SprintFunc()
+//	fmt.Fprintf(color.Output, "This is a %s", put("warning"))
+func (c *Color) SprintFunc() func(a ...any) string {
+	return func(a ...any) string {
+		return c.Sprint(a...)
+	}
+}
+
+// SprintfFunc returns a new function that returns colorized strings for the
+// given arguments with fmt.Sprintf(). Useful to put into or mix into other
+// string. Windows users should use this in conjunction with color.Output.
+func (c *Color) SprintfFunc() func(format string, a ...any) string {
+	return func(format string, a ...any) string {
+		return c.Sprintf(format, a...)
+	}
+}
+
+// SprintlnFunc returns a new function that returns colorized strings for the
+// given arguments with fmt.Sprintln(). Useful to put into or mix into other
+// string. Windows users should use this in conjunction with color.Output.
+func (c *Color) SprintlnFunc() func(a ...any) string {
+	return func(a ...any) string {
+		return c.Sprintln(a...)
+	}
+}
 
 /*****
 
@@ -147,3 +263,32 @@ func HiWhiteString(format string, a ...any) string {
 }
 
 ***/
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Equals returns a boolean value indicating whether two colors are equal.
+func Equals(c1, c2 *Color) bool {
+	if nil == c1 && nil == c2 {
+		return true
+	}
+	if nil == c1 || nil == c2 {
+		return false
+	}
+
+	if len(c1.attr) != len(c2.attr) {
+		return false
+	}
+
+	counts := make(map[ColorAttrib]uint, len(c1.attr)+1)
+	for _, a := range c1.attr {
+		counts[a]++
+	}
+
+	for _, a := range c2.attr {
+		if 0 == counts[a] {
+			return false
+		}
+		counts[a]--
+	}
+	return true
+}

@@ -73,6 +73,7 @@ const (
 	BgHiWhite
 )
 
+// Reset attributes -- inverse of the above
 const (
 	ResetBold ColorAttrib = iota + 22
 	ResetItalic

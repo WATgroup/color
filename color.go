@@ -35,7 +35,7 @@ type Color struct {
 
 // Init ialize the library -- optional
 func Init() {
-	disableColor = checkNoColor() || !stdoutIsTerminal()
+	disableColor = checkNoColor() || !stdoutIsTerminal() || checkTerm()
 	SetDefaults()
 }
 
@@ -47,13 +47,23 @@ func SetOutput(w io.Writer) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// New returns a newly created color object.
-func New(value ...ColorAttrib) (c Color) {
+// New returns a newly created color object [pointer]
+func New(value ...ColorAttrib) *Color {
 	if disableColor { // checkNoColor
-		return
+		return &Color{} // just an empty one
+	}
+	c := Color{}
+	c.Add(value...)
+	return &c
+}
+
+// New returns a newly created color object, with the required attributes
+func NewValue(value ...ColorAttrib) (c Color) {
+	if disableColor { // checkNoColor
+		return // just an empty one
 	}
 	c.Add(value...)
-	return
+	return c
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -21,7 +21,6 @@ func colorPrint(format string, p ColorAttrib, args ...any) {
 		fputs(stdOut, fmt.Sprintf(format, args...))
 		return
 	}
-
 	c := getCachedColor(p)
 
 	if !strings.HasSuffix(format, "\n") { // ?? compat....
@@ -30,9 +29,16 @@ func colorPrint(format string, p ColorAttrib, args ...any) {
 
 	var sb strings.Builder
 
+	escPrefix(&sb)
 	c.sequence(&sb)
+	escPostfix(&sb)
+
 	n, _ := fmt.Fprintf(&sb, format, args...)
+
+	escPrefix(&sb)
 	c.unseq(&sb)
+	escPostfix(&sb)
+
 	fputsb(stdOut, &sb, n)
 }
 
@@ -45,7 +51,7 @@ func colorPrint(format string, p ColorAttrib, args ...any) {
 // This is the standard fmt.Print() method wrapped with the given color
 func (c *Color) Print(args ...any) (n int, err error) {
 	if disableColor {
-		return fmt.Fprint(stdOut,args...)
+		return fmt.Fprint(stdOut, args...)
 	}
 
 	var sb strings.Builder
@@ -75,6 +81,18 @@ func (c *Color) Fprint(w io.Writer, args ...any) (n int, err error) {
 	if nil != err {
 		return
 	}
+	return fputsb(w, &sb, n)
+}
+
+// Fprintln formats using the default formats for its operands and writes to w.
+// Spaces are always added between operands and a newline is appended.
+func (c *Color) Fprintln(w io.Writer, args ...any) (n int, err error) {
+	var sb strings.Builder
+	n, err = c.wrapsbv(&sb, args)
+	if nil != err {
+		return
+	}
+	sb.WriteString(lineFeed)
 	return fputsb(w, &sb, n)
 }
 

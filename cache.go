@@ -8,18 +8,20 @@ package color
 import "sync"
 
 var (
-	colorsCache   = make(map[ColorAttrib]*Color, 17)
+	colorsCache   = make(map[ColorAttrib]*Color, 33)
 	colorsCacheMu sync.Mutex // protects colorsCache
 )
 
-func getCachedColor(p ColorAttrib) *Color {
+func getCachedColor(a ColorAttrib) *Color {
 	colorsCacheMu.Lock()
 	defer colorsCacheMu.Unlock()
 
-	c, ok := colorsCache[p]
-	if !ok {
-		cv := New(p)
-		colorsCache[p] = &cv
+	//revive:disable:indent-error-flow  False positive from the linter...
+	if c, ok := colorsCache[a]; !ok {
+		cp := New(a)
+		colorsCache[a] = cp
+		return cp
+	} else {
+		return c
 	}
-	return c
 }

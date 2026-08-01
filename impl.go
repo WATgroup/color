@@ -27,6 +27,10 @@ func checkNoColor() bool {
 	return "" != os.Getenv("NO_COLOR")
 }
 
+func checkTerm() bool {
+	return `dumb` == os.Getenv("TERM")
+}
+
 // stdoutIsTerminal returns true if os.Stdout is a terminal.
 // Returns false if os.Stdout is nil (e.g., when running as a Windows service).
 func stdoutIsTerminal() bool {
@@ -58,6 +62,8 @@ func fputs(w io.Writer, s string) {
 }
 
 // passthrough SB to Writer
+//
+//go:inline		// as it if was needed ;)
 func fputsb(w io.Writer, sb *strings.Builder, n int) (int, error) {
 	nn, err := w.Write([]byte(sb.String()))
 	if nil != err {
