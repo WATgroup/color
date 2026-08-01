@@ -14,8 +14,10 @@ func main() {
     // color.EnableColor()	// override
 
     b := color.New(color.FgHiBlue)
+    b.Println("This is blue")
+
     b.Add(color.Underline)
-    b.Print("This is blue")
+    b.Print("This is *underlined* blue")
 
     os.Exit(0)
 }

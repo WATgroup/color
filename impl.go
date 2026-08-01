@@ -57,20 +57,16 @@ func fputs(w io.Writer, s string) {
 	w.Write([]byte(s))
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-// sequence returns a formatted SGR sequence to be plugged into a "\x1b[...m"
-// an example output might be: "1;36" -> bold cyan
-
-//go:inline
-func (c *Color) sequence(sb *strings.Builder) {
-	for i, v := range c.attr {
-		if i > 0 {
-			sb.WriteByte(';')
-		}
-		sb.WriteString(smallNum(uint16(v)))
+// passthrough SB to Writer
+func fputsb(w io.Writer, sb *strings.Builder, n int) (int, error) {
+	nn, err := w.Write([]byte(sb.String()))
+	if nil != err {
+		return n, nil
 	}
+	return nn, err
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 // wrap wraps the s string with the colors attributes.
 // The string is ready to be printed.
@@ -118,6 +114,21 @@ func (c *Color) wrapsb(psb *strings.Builder, s string) {
 	escPrefix(psb)
 	c.unseq(psb)
 	escPostfix(psb)
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+// sequence returns a formatted SGR sequence to be plugged into a "\x1b[...m"
+// an example output might be: "1;36" -> bold cyan
+
+//go:inline
+func (c *Color) sequence(sb *strings.Builder) {
+	for i, v := range c.attr {
+		if i > 0 {
+			sb.WriteByte(';')
+		}
+		sb.WriteString(smallNum(uint16(v)))
+	}
 }
 
 //go:inline
