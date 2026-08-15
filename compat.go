@@ -76,7 +76,7 @@ func HiWhite(format string, a ...any) { colorPrint(format, FgHiWhite, a...) }
 
 // FprintFunc returns a new function that prints the passed arguments as
 // colorized with color.Fprint().
-func (c *Color) FprintFunc() func(w io.Writer, a ...any) {
+func (c Color) FprintFunc() func(w io.Writer, a ...any) {
 	return func(w io.Writer, a ...any) {
 		c.Fprint(w, a...)
 	}
@@ -84,7 +84,7 @@ func (c *Color) FprintFunc() func(w io.Writer, a ...any) {
 
 // PrintFunc returns a new function that prints the passed arguments as
 // colorized with color.Print().
-func (c *Color) PrintFunc() func(a ...any) {
+func (c Color) PrintFunc() func(a ...any) {
 	return func(a ...any) {
 		c.Print(a...)
 	}
@@ -92,7 +92,7 @@ func (c *Color) PrintFunc() func(a ...any) {
 
 // FprintfFunc returns a new function that prints the passed arguments as
 // colorized with color.Fprintf().
-func (c *Color) FprintfFunc() func(w io.Writer, format string, a ...any) {
+func (c Color) FprintfFunc() func(w io.Writer, format string, a ...any) {
 	return func(w io.Writer, format string, a ...any) {
 		c.Fprintf(w, format, a...)
 	}
@@ -100,7 +100,7 @@ func (c *Color) FprintfFunc() func(w io.Writer, format string, a ...any) {
 
 // PrintfFunc returns a new function that prints the passed arguments as
 // colorized with color.Printf().
-func (c *Color) PrintfFunc() func(format string, a ...any) {
+func (c Color) PrintfFunc() func(format string, a ...any) {
 	return func(format string, a ...any) {
 		c.Printf(format, a...)
 	}
@@ -108,7 +108,7 @@ func (c *Color) PrintfFunc() func(format string, a ...any) {
 
 // FprintlnFunc returns a new function that prints the passed arguments as
 // colorized with color.Fprintln().
-func (c *Color) FprintlnFunc() func(w io.Writer, a ...any) {
+func (c Color) FprintlnFunc() func(w io.Writer, a ...any) {
 	return func(w io.Writer, a ...any) {
 		c.Fprintln(w, a...)
 	}
@@ -116,7 +116,7 @@ func (c *Color) FprintlnFunc() func(w io.Writer, a ...any) {
 
 // PrintlnFunc returns a new function that prints the passed arguments as
 // colorized with color.Println().
-func (c *Color) PrintlnFunc() func(a ...any) {
+func (c Color) PrintlnFunc() func(a ...any) {
 	return func(a ...any) {
 		c.Println(a...)
 	}
@@ -128,7 +128,7 @@ func (c *Color) PrintlnFunc() func(a ...any) {
 //
 //	put := New(FgYellow).SprintFunc()
 //	fmt.Fprintf(color.Output, "This is a %s", put("warning"))
-func (c *Color) SprintFunc() func(a ...any) string {
+func (c Color) SprintFunc() func(a ...any) string {
 	return func(a ...any) string {
 		return c.Sprint(a...)
 	}
@@ -137,7 +137,7 @@ func (c *Color) SprintFunc() func(a ...any) string {
 // SprintfFunc returns a new function that returns colorized strings for the
 // given arguments with fmt.Sprintf(). Useful to put into or mix into other
 // string. Windows users should use this in conjunction with color.Output.
-func (c *Color) SprintfFunc() func(format string, a ...any) string {
+func (c Color) SprintfFunc() func(format string, a ...any) string {
 	return func(format string, a ...any) string {
 		return c.Sprintf(format, a...)
 	}
@@ -146,7 +146,7 @@ func (c *Color) SprintfFunc() func(format string, a ...any) string {
 // SprintlnFunc returns a new function that returns colorized strings for the
 // given arguments with fmt.Sprintln(). Useful to put into or mix into other
 // string. Windows users should use this in conjunction with color.Output.
-func (c *Color) SprintlnFunc() func(a ...any) string {
+func (c Color) SprintlnFunc() func(a ...any) string {
 	return func(a ...any) string {
 		return c.Sprintln(a...)
 	}

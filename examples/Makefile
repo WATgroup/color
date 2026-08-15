@@ -1,6 +1,4 @@
 #
 .PHONY: dummy
 
-
-tidy:	dummy
-	$(RM) *~
+-include /usr/share/go-common/gocommon.mk

@@ -15,13 +15,14 @@ import (
 //revive:disable:indent-error-flow   False positive....
 ///////////////////////////////////////////////////////////////////////////////
 
+//go:noinline
 func colorPrint(format string, p ColorAttrib, args ...any) {
 
 	if disableColor {
 		fputs(stdOut, fmt.Sprintf(format, args...))
 		return
 	}
-	c := getCachedColor(p)
+	cce := ccOp(p)
 
 	if !strings.HasSuffix(format, "\n") { // ?? compat....
 		format += "\n"
@@ -30,13 +31,13 @@ func colorPrint(format string, p ColorAttrib, args ...any) {
 	var sb strings.Builder
 
 	escPrefix(&sb)
-	c.sequence(&sb)
+	sb.WriteString(cce.set)
 	escPostfix(&sb)
 
 	n, _ := fmt.Fprintf(&sb, format, args...)
 
 	escPrefix(&sb)
-	c.unseq(&sb)
+	sb.WriteString(cce.unset)
 	escPostfix(&sb)
 
 	fputsb(stdOut, &sb, n)
@@ -49,7 +50,7 @@ func colorPrint(format string, p ColorAttrib, args ...any) {
 // standard output.
 // Returns the number of bytes written and any write error encountered.
 // This is the standard fmt.Print() method wrapped with the given color
-func (c *Color) Print(args ...any) (n int, err error) {
+func (c Color) Print(args ...any) (n int, err error) {
 	if disableColor {
 		return fmt.Fprint(stdOut, args...)
 	}
@@ -75,7 +76,7 @@ func (c *Color) Print(args ...any) (n int, err error) {
 // Fprint formats using the default formats for its operands and writes to w.
 // Spaces are added between operands when neither is a string.
 // It returns the number of bytes written and any write error encountered.
-func (c *Color) Fprint(w io.Writer, args ...any) (n int, err error) {
+func (c Color) Fprint(w io.Writer, args ...any) (n int, err error) {
 	var sb strings.Builder
 	n, err = c.wrapsbv(&sb, args)
 	if nil != err {
@@ -86,7 +87,7 @@ func (c *Color) Fprint(w io.Writer, args ...any) (n int, err error) {
 
 // Fprintln formats using the default formats for its operands and writes to w.
 // Spaces are always added between operands and a newline is appended.
-func (c *Color) Fprintln(w io.Writer, args ...any) (n int, err error) {
+func (c Color) Fprintln(w io.Writer, args ...any) (n int, err error) {
 	var sb strings.Builder
 	n, err = c.wrapsbv(&sb, args)
 	if nil != err {
@@ -98,7 +99,7 @@ func (c *Color) Fprintln(w io.Writer, args ...any) (n int, err error) {
 
 // Fprintf formats according to a format specifier and writes to w.
 // It returns the number of bytes written and any write error encountered.
-func (c *Color) Fprintf(w io.Writer, format string, args ...any) (n int, err error) {
+func (c Color) Fprintf(w io.Writer, format string, args ...any) (n int, err error) {
 	var sb strings.Builder
 	n, err = c.wrapsbf(&sb, format, args)
 	if nil != err {
@@ -110,7 +111,7 @@ func (c *Color) Fprintf(w io.Writer, format string, args ...any) (n int, err err
 // Printf formats according to a format specifier and writes to standard output.
 // It returns the number of bytes written and any write error encountered.
 // This is the standard fmt.Printf() method wrapped with the given color.
-func (c *Color) Printf(format string, args ...any) (n int, err error) {
+func (c Color) Printf(format string, args ...any) (n int, err error) {
 	return c.Fprintf(stdOut, format, args...)
 }
 
@@ -119,7 +120,7 @@ func (c *Color) Printf(format string, args ...any) (n int, err error) {
 // appended. It returns the number of bytes written and any write error
 // encountered. This is the standard fmt.Print() method wrapped with the given
 // color.
-func (c *Color) Println(args ...any) (n int, err error) {
+func (c Color) Println(args ...any) (n int, err error) {
 	var sb strings.Builder
 	n, err = c.wrapsbv(&sb, args)
 	if nil != err {
@@ -130,7 +131,7 @@ func (c *Color) Println(args ...any) (n int, err error) {
 }
 
 // Sprint is just like Print, but returns a string instead of printing it.
-func (c *Color) Sprint(args ...any) string {
+func (c Color) Sprint(args ...any) string {
 	// return c.wrap(fmt.Sprint(args...))
 	var sb strings.Builder
 	c.wrapsbv(&sb, args)
@@ -138,7 +139,7 @@ func (c *Color) Sprint(args ...any) string {
 }
 
 // Sprintln is just like Println, but returns a string instead of printing it.
-func (c *Color) Sprintln(args ...any) string {
+func (c Color) Sprintln(args ...any) string {
 	var sb strings.Builder
 	c.wrapsbv(&sb, args)
 	sb.WriteString(lineFeed)
@@ -146,7 +147,7 @@ func (c *Color) Sprintln(args ...any) string {
 }
 
 // Sprintf is just like Printf, but returns a string instead of printing it.
-func (c *Color) Sprintf(format string, args ...any) string {
+func (c Color) Sprintf(format string, args ...any) string {
 	var sb strings.Builder
 	c.wrapsbf(&sb, format, args)
 	return sb.String()

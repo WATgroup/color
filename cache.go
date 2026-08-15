@@ -7,21 +7,28 @@ package color
 
 import "sync"
 
+type colorcacheEntry struct {
+	color Color
+	set   string
+	unset string
+}
+
 var (
-	colorsCache   = make(map[ColorAttrib]*Color, 33)
+	colorsCache   = make(map[ColorAttrib]colorcacheEntry, 33)
 	colorsCacheMu sync.Mutex // protects colorsCache
 )
 
-func getCachedColor(a ColorAttrib) *Color {
+func ccOp(a ColorAttrib) *colorcacheEntry {
 	colorsCacheMu.Lock()
 	defer colorsCacheMu.Unlock()
 
 	//revive:disable:indent-error-flow  False positive from the linter...
-	if c, ok := colorsCache[a]; !ok {
-		cp := New(a)
-		colorsCache[a] = cp
-		return cp
+	if ce, ok := colorsCache[a]; !ok {
+		cv := New(a)
+		cce := colorcacheEntry{cv, cv.str_set(), cv.str_unset()}
+		colorsCache[a] = cce
+		return &cce
 	} else {
-		return c
+		return &ce
 	}
 }

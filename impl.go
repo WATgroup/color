@@ -155,15 +155,15 @@ func (c *Color) unseq(sb *strings.Builder) {
 	}
 }
 
-func (c *Color) format() string {
-	var sb strings.Builder
-
-	escPrefix(&sb)
-	c.sequence(&sb)
-	escPostfix(&sb)
-
-	return sb.String()
-}
+// func (c *Color) format() string {
+// 	var sb strings.Builder
+//
+// 	escPrefix(&sb)
+// 	c.sequence(&sb)
+// 	escPostfix(&sb)
+//
+// 	return sb.String()
+// }
 
 func escPrefix(sb *strings.Builder) {
 	sb.WriteRune(escRune)
@@ -171,4 +171,40 @@ func escPrefix(sb *strings.Builder) {
 }
 func escPostfix(sb *strings.Builder) {
 	sb.WriteRune('m')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// simplified "text string" functions
+
+//revive:disable:var-naming	We like our internal funcs with underscores...
+
+// builds the "set" string for the color
+func (c *Color) str_set() string {
+	var buf [32]byte
+	ret := buf[:0]
+	for i, v := range c.attr {
+		if i > 0 {
+			ret = append(ret, ';')
+		}
+		ret = append(ret, smallNum(uint16(v))...)
+	}
+	return string(ret)
+}
+
+// builds the "unset" string for the color (or plain reset otherwise)
+func (c *Color) str_unset() string {
+	rr := smallNum(uint16(Reset))
+	var buf [40]byte
+	ret := buf[:0]
+	for i, v := range c.attr {
+		if i > 0 {
+			ret = append(ret, ';')
+		}
+		if ra, ok := mapResetAttributes[v]; ok {
+			ret = append(ret, smallNum(uint16(ra))...)
+		} else {
+			ret = append(ret, rr...)
+		}
+	}
+	return string(ret)
 }
