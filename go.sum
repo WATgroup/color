@@ -1,4 +1,2 @@
-github.com/mattn/go-isatty v0.0.24 h1:tGZZoVgT/KiqK1c8ocVLeDS8BSWMRd47J3Lbz7vsReI=
-github.com/mattn/go-isatty v0.0.24/go.mod h1:nMCL3Zebbrt45jsMDgnfIwz6ydEQApk5oEI3HqDio6A=
-golang.org/x/sys v0.28.0 h1:Fksou7UEQUWlKvIdsqzJmUmCX3cZuD2+P3XyyzwMhlA=
-golang.org/x/sys v0.28.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
+github.com/WATgroup/errors v0.0.0-20260121003058-dbb2ae9e5a34 h1:6rlG1ejWQf0ZT8EG8zGuEB8Y6FzFrkPQ08/l9iu1Tow=
+github.com/WATgroup/errors v0.0.0-20260121003058-dbb2ae9e5a34/go.mod h1:CaKwCrkRKMVoy6U7vHa8NrCO7Zk7oi5OHwnHQGLhABI=

@@ -10,8 +10,7 @@ import (
 	"io"
 	"os"
 	"strings"
-
-	isatty "github.com/mattn/go-isatty"
+	// isatty "github.com/mattn/go-isatty"
 )
 
 const escape = "\x1b"
@@ -37,7 +36,8 @@ func stdoutIsTerminal() bool {
 	if os.Stdout == nil {
 		return false
 	}
-	return isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd())
+	// return isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd())
+	return isTerminal(int(os.Stdout.Fd()))
 }
 
 // SetDefaults sets stdOut/stdErr as needed
