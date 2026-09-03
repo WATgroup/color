@@ -14,6 +14,7 @@ type colorcacheEntry struct {
 }
 
 type cacheKey = []ColorAttrib
+
 var (
 	colorsCache   = make(map[ColorAttrib]colorcacheEntry, 33)
 	colorsCacheMu sync.Mutex // protects colorsCache
@@ -33,7 +34,6 @@ func ccOp(a ColorAttrib) *colorcacheEntry {
 		return &ce
 	}
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// simplified "text string" functions
@@ -73,6 +73,6 @@ func (c *Color) str_unset() string {
 			ret = append(ret, rr...)
 		}
 	}
-	ret = append(ret,seqendRune)
+	ret = append(ret, seqendRune)
 	return string(ret)
 }

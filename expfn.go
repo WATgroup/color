@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // SPDX-FileContributor: Created by Jose Luis Tallon <jltallon@w-a-t.group>
 
-
 package color
-
 
 // FprintFnreturns a new function that prints the passed arguments
 // colorized as with color.Fprint().

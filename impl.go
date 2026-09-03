@@ -19,7 +19,6 @@ const seqbegRune = '['
 const seqendRune = 'm'
 const lineFeed = "\x0a" // XXX: windows is \0xa0xd
 
-
 type Writer = io.Writer
 
 func init() {
@@ -31,7 +30,7 @@ func checkNoColor() bool {
 	return "" != os.Getenv("NO_COLOR")
 }
 
-func checkTerm() bool {
+func checkDumbTerm() bool {
 	return `dumb` == os.Getenv("TERM")
 }
 
