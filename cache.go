@@ -13,6 +13,7 @@ type colorcacheEntry struct {
 	unset string
 }
 
+type cacheKey = []ColorAttrib
 var (
 	colorsCache   = make(map[ColorAttrib]colorcacheEntry, 33)
 	colorsCacheMu sync.Mutex // protects colorsCache
@@ -31,4 +32,47 @@ func ccOp(a ColorAttrib) *colorcacheEntry {
 	} else {
 		return &ce
 	}
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// simplified "text string" functions
+
+//revive:disable:var-naming	We like our internal funcs with underscores...
+
+// builds the "set" string for the color
+func (c *Color) str_set() string {
+	var buf [32]byte
+	buf[0] = escRune
+	buf[1] = seqbegRune
+	ret := buf[:2]
+	for i, v := range c.attr {
+		if i > 0 {
+			ret = append(ret, ';')
+		}
+		ret = append(ret, smallNum(uint16(v))...)
+	}
+	ret = append(ret, seqendRune)
+	return string(ret)
+}
+
+// builds the "unset" string for the color (or plain reset otherwise)
+func (c *Color) str_unset() string {
+	rr := smallNum(uint16(Reset))
+	var buf [40]byte
+	buf[0] = escRune
+	buf[1] = seqbegRune
+	ret := buf[:2]
+	for i, v := range c.attr {
+		if i > 0 {
+			ret = append(ret, ';')
+		}
+		if ra, ok := mapResetAttributes[v]; ok {
+			ret = append(ret, smallNum(uint16(ra))...)
+		} else {
+			ret = append(ret, rr...)
+		}
+	}
+	ret = append(ret,seqendRune)
+	return string(ret)
 }

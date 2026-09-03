@@ -25,8 +25,8 @@ var (
 	disableColor = checkNoColor() || !stdoutIsTerminal()
 )
 
-//revive:disable-next-line:exported It's ok...
-type ColorAttrib uint16
+//revive:disable-next-line:exported It's ok... and no need for a different type
+type ColorAttrib = uint16
 
 // Color represents a console "color", in terms of attributes/ESC-codes
 type Color struct {

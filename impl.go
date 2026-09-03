@@ -15,7 +15,12 @@ import (
 
 const escape = "\x1b"
 const escRune = 0x1b
+const seqbegRune = '['
+const seqendRune = 'm'
 const lineFeed = "\x0a" // XXX: windows is \0xa0xd
+
+
+type Writer = io.Writer
 
 func init() {
 	Init() // avoid crashes if/when user forgets to initialize the library
@@ -171,40 +176,4 @@ func escPrefix(sb *strings.Builder) {
 }
 func escPostfix(sb *strings.Builder) {
 	sb.WriteRune('m')
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/// simplified "text string" functions
-
-//revive:disable:var-naming	We like our internal funcs with underscores...
-
-// builds the "set" string for the color
-func (c *Color) str_set() string {
-	var buf [32]byte
-	ret := buf[:0]
-	for i, v := range c.attr {
-		if i > 0 {
-			ret = append(ret, ';')
-		}
-		ret = append(ret, smallNum(uint16(v))...)
-	}
-	return string(ret)
-}
-
-// builds the "unset" string for the color (or plain reset otherwise)
-func (c *Color) str_unset() string {
-	rr := smallNum(uint16(Reset))
-	var buf [40]byte
-	ret := buf[:0]
-	for i, v := range c.attr {
-		if i > 0 {
-			ret = append(ret, ';')
-		}
-		if ra, ok := mapResetAttributes[v]; ok {
-			ret = append(ret, smallNum(uint16(ra))...)
-		} else {
-			ret = append(ret, rr...)
-		}
-	}
-	return string(ret)
 }

@@ -30,17 +30,21 @@ func colorPrint(format string, p ColorAttrib, args ...any) {
 
 	var sb strings.Builder
 
-	escPrefix(&sb)
+	// escPrefix(&sb)
 	sb.WriteString(cce.set)
-	escPostfix(&sb)
+	// escPostfix(&sb)
 
 	n, _ := fmt.Fprintf(&sb, format, args...)
 
-	escPrefix(&sb)
+	// escPrefix(&sb)
 	sb.WriteString(cce.unset)
-	escPostfix(&sb)
+	// escPostfix(&sb)
 
 	fputsb(stdOut, &sb, n)
+}
+
+func fprintFn(w Writer, args ...any) {
+	fmt.Fprint(w, args...)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
