@@ -10,6 +10,9 @@ const osc8setStart = "\x1b]8;;"
 const osc8end = "\x1b\\" // ESC-ST [string terminator]
 const osc8resetStart = "\x1b]8;;"
 
+// Hyperlink returns the escaped string corresponding to the provided URL
+// (with display text "text"), suitable for display on conforming terminal emulators
+// NOTE: no checks for OSC8 support are done -- assumed to be verified previously.
 func Hyperlink(url, text string) string {
 
 	var sb strings.Builder
