@@ -43,8 +43,11 @@ func colorPrint(format string, p ColorAttrib, args ...any) {
 	fputsb(stdOut, &sb, n)
 }
 
-func fprintFn(w Writer, args ...any) {
-	fmt.Fprint(w, args...)
+// fprintFn = fmt.Fprint
+//
+//go:inline	// obviously...
+func fprintFn(w ioWriter, args ...any) (int, error) {
+	return fmt.Fprint(w, args...)
 }
 
 ///////////////////////////////////////////////////////////////////////////////

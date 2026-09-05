@@ -19,7 +19,7 @@ const seqbegRune = '['
 const seqendRune = 'm'
 const lineFeed = "\x0a" // XXX: windows is \0xa0xd
 
-type Writer = io.Writer
+type ioWriter = io.Writer
 
 func init() {
 	Init() // avoid crashes if/when user forgets to initialize the library
@@ -61,8 +61,9 @@ func SetDefaults() {
 func fputbs(w io.Writer, x []byte) {
 	w.Write(x)
 }
-func fputs(w io.Writer, s string) {
-	w.Write([]byte(s))
+func fputs(w io.Writer, s string) (err error) {
+	_, err = w.Write([]byte(s))
+	return
 }
 
 // passthrough SB to Writer
@@ -87,7 +88,6 @@ func (c *Color) wrap(s string) string {
 		return s
 	}
 	var sb strings.Builder
-	// return c.format() + s + c.unformat()
 
 	// PREFIX:   ESC[X..m
 	escPrefix(&sb)
@@ -158,16 +158,6 @@ func (c *Color) unseq(sb *strings.Builder) {
 		}
 	}
 }
-
-// func (c *Color) format() string {
-// 	var sb strings.Builder
-//
-// 	escPrefix(&sb)
-// 	c.sequence(&sb)
-// 	escPostfix(&sb)
-//
-// 	return sb.String()
-// }
 
 func escPrefix(sb *strings.Builder) {
 	sb.WriteRune(escRune)
